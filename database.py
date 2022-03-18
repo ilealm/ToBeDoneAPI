@@ -1,15 +1,12 @@
-# from modulefinder import IMPORT_NAME
-from model import Tasks
-import settings 
-
-project_settings = settings.PROJECT_SETTINGS()
-project_db_settings = project_settings.BD_SETTINGS
-
-conn_str = project_db_settings.CONECCTION
-
-
 # MongoDB Driver
 import motor.motor_asyncio
+from model import Tasks
+from dotenv import dotenv_values
+
+
+project_config = dotenv_values(".env")
+conn_str = project_config['CONECCTION']
+
 
 
 client = motor.motor_asyncio.AsyncIOMotorClient(conn_str, serverSelectionTimeoutMS=5000)
@@ -20,6 +17,7 @@ collection = database.Tasks
 
 
 async def fetch_all_tasks():
+    
     tasks = [] 
     cursor = collection.find({})
     async for document in cursor:
