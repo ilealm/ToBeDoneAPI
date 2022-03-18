@@ -1,8 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from pytest import console_main
 
 # IMPORTANT In order to use the response_model=, I need to import the model
 from model import Tasks
+
 
 from database import(
     fetch_one_task,
@@ -18,7 +20,11 @@ app = FastAPI()
 # CORS: Specify the Origins of React and FastAPI so they can communicate.
 # If I don't do this, they WON'T communitate!
 # React port: 3000   /   FastAPI port :8000 (That's why is 127.0.0.1:8000)
-origins = ['https://localhost:3000']
+# TODO add this to settings
+origins = [
+    'https://localhost:3000',
+    'http://localhost:3000',
+]
 
 # origins = ['https://localhost:3000', 'http://127.0.0.1:8000']
 
@@ -63,7 +69,7 @@ async def post_task(task:Tasks):
     raise HTTPException(400, "Something when wrong / bad request.")
 
 
-@app.put("/api/task{task}/", response_model=Tasks)
+@app.put("/api/task/{task}", response_model=Tasks)
 async def put_task(task:str, location:str):
     response = await update_task(task, location)
 
@@ -73,7 +79,7 @@ async def put_task(task:str, location:str):
 
 
 
-@app.delete("/api/task{task}")
+@app.delete("/api/task/{task}")
 async def delete_task(task):
     response = await remove_task(task)
 
