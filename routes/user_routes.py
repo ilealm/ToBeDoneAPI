@@ -41,17 +41,16 @@ async def get_user_by_username(username):
         return response
     raise HTTPException(status.HTTP_404_NOT_FOUND, f"There is no user with username {username}.")
 
-
 @app.put("/api/users/{username}", response_model=Users)
-async def put_user(username: str, full_name: Optional[str], email: Optional[EmailStr], hashed_password: Optional[str],  disabled: Optional[bool] = False):
-    response = await update_user(username, full_name, email, hashed_password, disabled)
+async def put_user(username: str, full_name: Optional[str]=None, email: Optional[EmailStr]= None, disabled: Optional[bool] = None):
+    response = await update_user(username, full_name, email, disabled)
+
 
     if response:
         return response
     raise HTTPException(status.HTTP_404_NOT_FOUND, f"There is no username {username}.")
 
 
-# @app.delete("/api/users/{username}", response_model=Users)
 @app.delete("/api/users/{username}")
 async def delete_user(username):
     response = await remove_user(username)

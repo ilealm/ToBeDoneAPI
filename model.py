@@ -1,11 +1,10 @@
 # pydantic helps to autocreate the json schema from the model
 # All the data validation is performed under the hood by Pydantic (e.g /docs)
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
 # maybe letter I will nedd this
 from typing import Optional
 # from typing import List, Optional
-# requiered for using alias:
-import uuid
+
 
 
     
@@ -13,13 +12,12 @@ class Tasks(BaseModel):
     task: str
     location: str
 
-# todo add _id
+
 class Users(BaseModel):
-    # id: str=Field(default_factory=uuid.uuid4, alias="_id")
     username: str
-    full_name: Optional[str]
+    full_name: Optional[str] = None
     email: Optional[EmailStr] = None
-    hashed_password: Optional[str]
+    hashed_password: Optional[str] = None
     disabled: Optional[bool] = False
 
 
