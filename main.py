@@ -1,22 +1,33 @@
-from fastapi import FastAPI, HTTPException
+# from lib2to3.pgen2.token import OP
+# from re import I
+from typing import Optional   #for the user model here
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pytest import console_main
+# Authentication and Authorizaion
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+# for verifying tokens JSON Web Tokens(jwt)
+from jose import JWTError, jwt
+# for token expiration
+from datetime import datetime, timedelta
+# Hash and verify passwords
+from passlib.context import CryptContext
+# Authentication and Authorizaion, in this example
+from pydantic import BaseModel
 
-# IMPORTANT In order to use the response_model=, I need to import the model
-from model import Tasks
+from model import Users
 
-
-from database import(
-    fetch_one_task,
-    fetch_all_tasks,
-    create_task, 
-    update_task,
-    remove_task,
-)
 
 
 app = FastAPI()
+# this import has to be after the creation of app, BC is referenced in the next import
+# from routes import user_routes
+from routes import (
+    # task_routes,
+    user_routes
+    )
 
+# from routes import test_task_routes
 # CORS: Specify the Origins of React and FastAPI so they can communicate.
 # If I don't do this, they WON'T communitate!
 # React port: 3000   /   FastAPI port :8000 (That's why is 127.0.0.1:8000)
@@ -26,9 +37,7 @@ origins = [
     'http://localhost:3000',
 ]
 
-# origins = ['https://localhost:3000', 'http://127.0.0.1:8000']
 
-# add the middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -37,53 +46,3 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
-    # get_server_info()
-    return {"ping":"... pong"}
-
-
-@app.get("/api/tasks")
-async def get_tasks():
-    response = await fetch_all_tasks()
-    return response
-
-
-@app.get("/api/task{task}", response_model=Tasks)
-async def get_task_by_task(task):
-    response = await fetch_one_task(task)
-
-    if response:
-        return response
-    raise HTTPException(404, f"There is no task with the name {task}.")
-
-
-# response_model=Task and :Task is to say I want the task to be as my model Task
-@app.post("/api/task", response_model=Tasks)
-async def post_task(task:Tasks):
-    # create task is waiting for a JSON, that's why I'm using .dict
-    response = await create_task(task.dict())
-
-    if response:
-        return response    
-    raise HTTPException(400, "Something when wrong / bad request.")
-
-
-@app.put("/api/task/{task}", response_model=Tasks)
-async def put_task(task:str, location:str):
-    response = await update_task(task, location)
-
-    if response:
-        return response    
-    raise HTTPException(404, f"There is no task with the name {task}")
-
-
-
-@app.delete("/api/task/{task}")
-async def delete_task(task):
-    response = await remove_task(task)
-
-    if response:
-        return "Task succesfully deleted."
-    
-    raise HTTPException(404, f"Task not found {task}")
