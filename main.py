@@ -1,5 +1,4 @@
-# from lib2to3.pgen2.token import OP
-# from re import I
+from http.client import REQUEST_URI_TOO_LONG
 from typing import Optional   #for the user model here
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,34 +14,23 @@ from passlib.context import CryptContext
 # Authentication and Authorizaion, in this example
 from pydantic import BaseModel
 
+# from dotenv import dotenv_values
+from dotenv import dotenv_values
 from model import Users
 
 
 
 app = FastAPI()
-# this import has to be after the creation of app, BC is referenced in the next import
-# from routes import user_routes
-from routes import (
-    # task_routes,
-    user_routes
-    )
-
-# from routes import test_task_routes
-# CORS: Specify the Origins of React and FastAPI so they can communicate.
-# If I don't do this, they WON'T communitate!
-# React port: 3000   /   FastAPI port :8000 (That's why is 127.0.0.1:8000)
-# TODO add this to settings
-origins = [
-    'https://localhost:3000',
-    'http://localhost:3000',
-]
-
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=dotenv_values(".env")["ORIGINS"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# this import has to be after the creation of app, BC is referenced in the next import
 
+from routes import (    
+    auth,
+    )

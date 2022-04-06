@@ -1,6 +1,4 @@
 # MongoDB Driver
-from curses import curs_set
-from pickle import FALSE
 import motor.motor_asyncio
 from model import (
     Tasks, Users,
